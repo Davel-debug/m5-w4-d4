@@ -16,7 +16,13 @@ public class PlayerController : BaseMover
 
     void Update()
     {
-        Vector3 inputDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        //Prendo i movimenti horizzontali e verticali in base alla telecamera escludendo y
+        Vector3 forward = Vector3.Normalize(new Vector3(mainCamera.transform.forward.x, 0f, mainCamera.transform.forward.z));
+        Vector3 right = Vector3.Normalize(new Vector3(mainCamera.transform.right.x, 0f, mainCamera.transform.right.z));
+        
+        //Creo il vettore direzione come somma di vettori e tolgo y
+        Vector3 inputDirection = (right * Input.GetAxis("Horizontal")) + (forward * Input.GetAxis("Vertical"));
+        inputDirection.y = 0f;
 
         if (inputDirection.magnitude > inputThreshold)
         {
