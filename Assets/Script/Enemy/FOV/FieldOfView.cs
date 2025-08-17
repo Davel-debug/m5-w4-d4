@@ -13,7 +13,6 @@ public class FieldOfView : MonoBehaviour
 
     public EnemyController enemy;
 
-
     [HideInInspector] public Transform visibleTarget;
 
     void Update()
@@ -24,23 +23,31 @@ public class FieldOfView : MonoBehaviour
     void FindVisibleTargets()
     {
         visibleTarget = null;
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
+        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius + enemy.extraViewRadius, targetMask);
 
         foreach (Collider target in targetsInViewRadius)
         {
             Vector3 dirToTarget = (target.transform.position - transform.position).normalized;
-            float effectiveViewAngle = viewAngle / 2 + enemy.extraViewAngle; // extraViewAngle lo metti nell'EnemyController
-            if (Vector3.Angle(transform.forward, dirToTarget) < effectiveViewAngle)
-            {
-                float distToTarget = Vector3.Distance(transform.position, target.transform.position);
+            float distToTarget = Vector3.Distance(transform.position, target.transform.position);
 
+            // dentro al cono normale
+            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+            {
                 if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
                 {
                     visibleTarget = target.transform;
                     break;
                 }
             }
-
+            // dentro al cerchio extra
+            else if (distToTarget <= enemy.extraViewRadius)
+            {
+                if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, obstacleMask))
+                {
+                    visibleTarget = target.transform;
+                    break;
+                }
+            }
         }
     }
 
@@ -48,6 +55,10 @@ public class FieldOfView : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, viewRadius);
+
+        
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, enemy != null ? enemy.extraViewRadius : 0f);
 
         Vector3 leftBoundary = DirFromAngle(-viewAngle / 2, false);
         Vector3 rightBoundary = DirFromAngle(viewAngle / 2, false);

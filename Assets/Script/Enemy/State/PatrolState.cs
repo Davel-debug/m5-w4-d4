@@ -64,6 +64,7 @@ public class PatrolState : EnemyState
 
     private void Patrol()
     {
+        enemy.agent.speed = enemy.patrolSpeed; 
         if (!enemy.agent.pathPending && enemy.agent.remainingDistance < enemy.waypointTolerance)
         {
             enemy.currentWaypointIndex = (enemy.currentWaypointIndex + 1) % enemy.waypoints.Length;
@@ -73,4 +74,5 @@ public class PatrolState : EnemyState
         if (enemy.fov.visibleTarget != null)
             stateMachine.ChangeState(new ChaseState(enemy, stateMachine));
     }
+
 }

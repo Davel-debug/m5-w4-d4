@@ -21,6 +21,7 @@ public class EnemyController : MonoBehaviour
     public Transform[] waypoints;
     public int currentWaypointIndex = 0;
     public float waypointTolerance = 1f;
+    public float patrolSpeed = 2f; 
 
     [Header("Idle Settings")]
     public float idleRotationSpeed = 30f;
@@ -32,9 +33,14 @@ public class EnemyController : MonoBehaviour
     public float timeToLosePlayer = 3f;
     public float chaseSpeed = 5f;
     public float turnSpeed = 5f;
-    [Range(0f, 360f)] public float extraViewAngle = 30f;
 
+    [Header("Vision Extras")]
+    public float extraViewRadius = 5f; 
+
+    [Header("Search Settings")]
     public float searchTime = 3f;
+    public int searchOscillationCount = 2; // quante oscillazioni dx/sx
+    public float searchRotationSpeed = 120f; // velocità rotazione ricerca
 
     private EnemyStateMachine stateMachine;
 

@@ -58,7 +58,7 @@ Transform:
   m_GameObject: {fileID: 1722134734124183490}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 13.43, y: 0, z: -3.93}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -298,6 +298,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fov: {fileID: 2480679034162502647}
   meshResolution: 30
+  heightOffset: -1
 --- !u!1 &8350050425896298639
 GameObject:
   m_ObjectHideFlags: 0
@@ -488,14 +489,17 @@ MonoBehaviour:
   - {fileID: 795146047001222477}
   currentWaypointIndex: 0
   waypointTolerance: 1
+  patrolSpeed: 2
   idleRotationSpeed: 55
   idleRotationInterval: 2
   lastPlayerPosition: {x: 0, y: 0, z: 0}
   timeToLosePlayer: 3
   chaseSpeed: 5
   turnSpeed: 3
-  extraViewAngle: 55.2
+  extraViewRadius: 1.2
   searchTime: 3
+  searchOscillationCount: 2
+  searchRotationSpeed: 120
 --- !u!114 &2480679034162502647
 MonoBehaviour:
   m_ObjectHideFlags: 0

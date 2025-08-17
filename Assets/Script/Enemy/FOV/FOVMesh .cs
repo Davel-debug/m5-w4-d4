@@ -4,8 +4,9 @@ using System.Collections.Generic;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class FOVVisualizer : MonoBehaviour
 {
-    public FieldOfView fov; // riferimento al FieldOfView
+    public FieldOfView fov;
     public int meshResolution = 30;
+    public float heightOffset = -1f; // quanto abbassare le mesh rispetto all'enemy
 
     private MeshFilter meshFilter;
     private Mesh mesh;
@@ -26,46 +27,67 @@ public class FOVVisualizer : MonoBehaviour
 
     void DrawFOV()
     {
-        if (fov == null || meshResolution <= 0) return; // evita crash
+        if (fov == null || meshResolution <= 0) return;
 
-        float stepAngle = fov.viewAngle / meshResolution;
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
 
-        vertices.Add(Vector3.zero); // centro
+        // y di riferimento abbassata
+        float baseY = fov.transform.position.y + heightOffset;
 
+        // centro locale del cono
+        vertices.Add(new Vector3(0, heightOffset, 0));
+
+        float stepAngle = fov.viewAngle / meshResolution;
         for (int i = 0; i <= meshResolution; i++)
         {
             float angle = -fov.viewAngle / 2 + stepAngle * i;
             Vector3 dir = fov.DirFromAngle(angle, false);
             RaycastHit hit;
 
-            Vector3 vertex;
+            Vector3 worldVertex;
             if (Physics.Raycast(fov.transform.position, dir, out hit, fov.viewRadius, fov.obstacleMask))
-            {
-                vertex = transform.InverseTransformPoint(hit.point);
-            }
+                worldVertex = hit.point;
             else
-            {
-                vertex = transform.InverseTransformPoint(fov.transform.position + dir * fov.viewRadius);
-            }
+                worldVertex = fov.transform.position + dir * fov.viewRadius;
 
-            vertices.Add(vertex);
+            worldVertex.y = baseY; // forza l’altezza
+            vertices.Add(transform.InverseTransformPoint(worldVertex));
         }
 
-        // Ora ci sono vertices.Length = meshResolution + 2
-        for (int i = 1; i < vertices.Count - 1; i++)
+        // triangoli cono
+        for (int i = 1; i < meshResolution + 1; i++)
         {
             triangles.Add(0);
             triangles.Add(i);
             triangles.Add(i + 1);
         }
 
+        // cerchio extra
+        int circleStartIndex = vertices.Count;
+        vertices.Add(new Vector3(0, heightOffset, 0)); // pivot cerchio extra
+
+        for (int i = 0; i <= meshResolution; i++)
+        {
+            float angle = (360f / meshResolution) * i;
+            Vector3 dir = new Vector3(Mathf.Sin(angle * Mathf.Deg2Rad), 0, Mathf.Cos(angle * Mathf.Deg2Rad));
+            Vector3 worldVertex = fov.transform.position + dir * fov.enemy.extraViewRadius;
+            worldVertex.y = baseY;
+            vertices.Add(transform.InverseTransformPoint(worldVertex));
+        }
+
+        // triangoli cerchio
+        for (int i = circleStartIndex + 1; i < vertices.Count - 1; i++)
+        {
+            triangles.Add(circleStartIndex);
+            triangles.Add(i);
+            triangles.Add(i + 1);
+        }
+
+        // aggiorna mesh
         mesh.Clear();
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.RecalculateNormals();
     }
-
-
 }

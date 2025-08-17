@@ -97,7 +97,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fov: {fileID: 374908081088728706}
-  meshResolution: 30
+  meshResolution: 50
+  heightOffset: -1
 --- !u!1 &1582700742261087790
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,14 +256,17 @@ MonoBehaviour:
   - {fileID: 6752587512862052342}
   currentWaypointIndex: 0
   waypointTolerance: 1
+  patrolSpeed: 2
   idleRotationSpeed: 55
   idleRotationInterval: 2
   lastPlayerPosition: {x: 0, y: 0, z: 0}
   timeToLosePlayer: 3
   chaseSpeed: 5
   turnSpeed: 3
-  extraViewAngle: 55.2
+  extraViewRadius: 1
   searchTime: 3
+  searchOscillationCount: 3
+  searchRotationSpeed: 120
 --- !u!114 &374908081088728706
 MonoBehaviour:
   m_ObjectHideFlags: 0
