@@ -7,8 +7,10 @@ public class EnemyController : MonoBehaviour
     public enum EnemyType { Idle, Patrol }
     [Header("Type Settings")]
     public EnemyType enemyType = EnemyType.Patrol;
-    [HideInInspector] public Vector3 idleOrigin;
 
+    [Header("Origin Settings")]
+    public Vector3 idleOrigin;
+    public Quaternion idleOriginRotation;
 
     [Header("References")]
     public Transform player;
@@ -32,6 +34,8 @@ public class EnemyController : MonoBehaviour
     public float turnSpeed = 5f;
     [Range(0f, 360f)] public float extraViewAngle = 30f;
 
+    public float searchTime = 3f;
+
     private EnemyStateMachine stateMachine;
 
     private void Awake()
@@ -48,6 +52,8 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
+        idleOrigin = transform.position;
+        idleOriginRotation = transform.rotation;
         stateMachine.ChangeState(new PatrolState(this, stateMachine));
     }
 

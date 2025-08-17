@@ -4,17 +4,17 @@ public class ReturnState : EnemyState
 {
     public ReturnState(EnemyController enemy, EnemyStateMachine stateMachine) : base(enemy, stateMachine) { }
 
+
     public override void Enter()
     {
-        if (enemy.waypoints.Length > 0)
-            enemy.agent.SetDestination(enemy.waypoints[enemy.currentWaypointIndex].position);
+        enemy.agent.SetDestination(enemy.idleOrigin);
     }
 
     public override void Update()
     {
-        if (enemy.waypoints.Length > 0 && !enemy.agent.pathPending && enemy.agent.remainingDistance < enemy.waypointTolerance)
+        if (!enemy.agent.pathPending && enemy.agent.remainingDistance < enemy.waypointTolerance)
         {
-            stateMachine.ChangeState(new PatrolState(enemy, stateMachine));
+            stateMachine.ChangeState(new PatrolState(enemy, stateMachine)); // torna idle
         }
 
         if (enemy.fov.visibleTarget != null)
@@ -22,4 +22,5 @@ public class ReturnState : EnemyState
             stateMachine.ChangeState(new ChaseState(enemy, stateMachine));
         }
     }
+
 }
