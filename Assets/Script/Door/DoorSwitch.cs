@@ -40,9 +40,6 @@ public class DoorSwitch : MonoBehaviour
 
         vicino = Vector3.Distance(player.position, transform.position) <= distanzaInterazione;
 
-        if (vicino)
-            Debug.Log("Premi E per attivare l'interruttore");
-
         if (vicino && Input.GetKeyDown(KeyCode.E) && !porteInMovimento)
         {
             attivato = !attivato; // toggle stato
@@ -55,7 +52,10 @@ public class DoorSwitch : MonoBehaviour
                 Renderer rend = porta.GetComponent<Renderer>();
                 float altezza = (rend != null) ? rend.bounds.size.y : 1f;
                 float targetY = attivato ? porta.position.y - altezza - 1f : posInizialiDaScendere[porta].y;
-                posTarget[porta] = new Vector3(porta.position.x, targetY, porta.position.z);
+                Vector3 target = new Vector3(porta.position.x, targetY, porta.position.z);
+                posTarget[porta] = target;
+
+                Debug.Log($"[Porta SCENDE] Origine={porta.position} Target={target}");
             }
 
             // target porte da salire
@@ -64,10 +64,13 @@ public class DoorSwitch : MonoBehaviour
                 Renderer rend = porta.GetComponent<Renderer>();
                 float altezza = (rend != null) ? rend.bounds.size.y : 1f;
                 float targetY = attivato ? posInizialiDaSalire[porta].y : posInizialiDaSalire[porta].y + altezza + 1f;
-                posTarget[porta] = new Vector3(porta.position.x, targetY, porta.position.z);
-            }
-        }//non funziona correggi
+                Vector3 target = new Vector3(porta.position.x, -targetY, porta.position.z); //il problema è sul targety aggiustalo
+                posTarget[porta] = target;
 
+                Debug.Log($"[Porta SALE] Origine={porta.position} Target={target}");
+            }
+        }
+    
         if (porteInMovimento)
         {
             bool tutteArrivate = true;
