@@ -51,7 +51,7 @@ public class DoorSwitch : MonoBehaviour
             {
                 Renderer rend = porta.GetComponent<Renderer>();
                 float altezza = (rend != null) ? rend.bounds.size.y : 1f;
-                float targetY = attivato ? porta.position.y - altezza - 1f : posInizialiDaScendere[porta].y;
+                float targetY = attivato ? porta.position.y - altezza -1f : posInizialiDaScendere[porta].y;
                 Vector3 target = new Vector3(porta.position.x, targetY, porta.position.z);
                 posTarget[porta] = target;
 
@@ -63,8 +63,8 @@ public class DoorSwitch : MonoBehaviour
             {
                 Renderer rend = porta.GetComponent<Renderer>();
                 float altezza = (rend != null) ? rend.bounds.size.y : 1f;
-                float targetY = attivato ? posInizialiDaSalire[porta].y : posInizialiDaSalire[porta].y + altezza + 1f;
-                Vector3 target = new Vector3(porta.position.x, -targetY, porta.position.z); //il problema è sul targety aggiustalo
+                float targetY = attivato ? porta.position.y + altezza  + 1f : posInizialiDaSalire[porta].y;
+                Vector3 target = new Vector3(porta.position.x, targetY, porta.position.z);
                 posTarget[porta] = target;
 
                 Debug.Log($"[Porta SALE] Origine={porta.position} Target={target}");
