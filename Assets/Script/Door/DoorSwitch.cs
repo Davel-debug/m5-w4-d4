@@ -14,12 +14,11 @@ public class DoorSwitch : MonoBehaviour
     public List<Transform> porteDaSalire = new List<Transform>();
 
     [Header("Impostazioni")]
-    public float distanzaInterazione = 3f;
     public float velocitaMovimento = 2f;
 
-    private bool vicino = false;
     private bool attivato = false;
     private bool porteInMovimento = false;
+    private bool playerVicino = false;
 
     private Dictionary<Transform, Vector3> posInizialiDaScendere = new Dictionary<Transform, Vector3>();
     private Dictionary<Transform, Vector3> posInizialiDaSalire = new Dictionary<Transform, Vector3>();
@@ -36,11 +35,7 @@ public class DoorSwitch : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
-
-        vicino = Vector3.Distance(player.position, transform.position) <= distanzaInterazione;
-
-        if (vicino && Input.GetKeyDown(KeyCode.E) && !porteInMovimento)
+        if (playerVicino && Input.GetKeyDown(KeyCode.E) && !porteInMovimento)
         {
             attivato = !attivato; // toggle stato
             porteInMovimento = true;
@@ -49,28 +44,28 @@ public class DoorSwitch : MonoBehaviour
             // target porte da scendere
             foreach (Transform porta in porteDaScendere)
             {
-                Renderer rend = porta.GetComponent<Renderer>();
+                Renderer rend = porta.GetComponentInChildren<Renderer>();
                 float altezza = (rend != null) ? rend.bounds.size.y : 1f;
-                float targetY = attivato ? porta.position.y - altezza -1f : posInizialiDaScendere[porta].y;
+                float targetY = attivato ? porta.position.y - altezza - 1f : posInizialiDaScendere[porta].y;
                 Vector3 target = new Vector3(porta.position.x, targetY, porta.position.z);
                 posTarget[porta] = target;
 
-                Debug.Log($"[Porta SCENDE] Origine={porta.position} Target={target}");
+                Debug.Log($"[Porta SCENDE] Origine={porta.position} Target={target} Altezza={altezza} Oggetto={rend?.gameObject.name}");
             }
 
             // target porte da salire
             foreach (Transform porta in porteDaSalire)
             {
-                Renderer rend = porta.GetComponent<Renderer>();
+                Renderer rend = porta.GetComponentInChildren<Renderer>();
                 float altezza = (rend != null) ? rend.bounds.size.y : 1f;
-                float targetY = attivato ? porta.position.y + altezza  + 1f : posInizialiDaSalire[porta].y;
+                float targetY = attivato ? porta.position.y + altezza + 1f : posInizialiDaSalire[porta].y;
                 Vector3 target = new Vector3(porta.position.x, targetY, porta.position.z);
                 posTarget[porta] = target;
 
-                Debug.Log($"[Porta SALE] Origine={porta.position} Target={target}");
+                Debug.Log($"[Porta SALE] Origine={porta.position} Target={target} Altezza={altezza} Oggetto={rend?.gameObject.name}");
             }
         }
-    
+
         if (porteInMovimento)
         {
             bool tutteArrivate = true;
@@ -89,6 +84,24 @@ public class DoorSwitch : MonoBehaviour
                 if (navmeshSurface != null)
                     navmeshSurface.BuildNavMesh();
             }
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.transform == player)
+        {
+            playerVicino = true;
+            Debug.Log("Player vicino al pulsante.");
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.transform == player)
+        {
+            playerVicino = false;
+            Debug.Log("Player si è allontanato.");
         }
     }
 }
