@@ -17,9 +17,17 @@ public class LevelGenerator : MonoBehaviour
     private bool playerSpawned = false;
     void Start()
     {
+        if (surface == null)
+        {
+            surface = FindObjectOfType<NavMeshSurface>();
+            if (surface == null)
+                Debug.LogWarning("Nessuna NavMeshSurface trovata nella scena!");
+        }
+
         GenerateLevel();
 
-        surface.BuildNavMesh();
+        if (surface != null)
+            surface.BuildNavMesh();
     }
 
     void GenerateLevel()

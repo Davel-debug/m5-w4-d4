@@ -1,3 +1,4 @@
+
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -26,6 +27,20 @@ public class DoorSwitch : MonoBehaviour
 
     void Start()
     {
+        //trova il player con il tag "Player"
+
+        
+         player = GameObject.FindGameObjectWithTag("Player").transform;
+
+        if (player == null)
+            Debug.LogWarning("Nessun oggetto con tag 'Player' trovato!");
+
+        //trova la NavMeshSurface
+        navmeshSurface = FindObjectOfType<NavMeshSurface>();
+        if (navmeshSurface == null)
+            Debug.LogWarning("Nessuna NavMeshSurface trovata nella scena!");
+
+        //salvo le posizioni iniziali
         foreach (Transform porta in porteDaScendere)
             posInizialiDaScendere[porta] = porta.position;
 
@@ -37,11 +52,11 @@ public class DoorSwitch : MonoBehaviour
     {
         if (playerVicino && Input.GetKeyDown(KeyCode.E) && !porteInMovimento)
         {
-            attivato = !attivato; // toggle stato
+            attivato = !attivato; //toggle stato
             porteInMovimento = true;
             posTarget.Clear();
 
-            // target porte da scendere
+            //target porte da scendere
             foreach (Transform porta in porteDaScendere)
             {
                 Renderer rend = porta.GetComponentInChildren<Renderer>();
@@ -53,7 +68,7 @@ public class DoorSwitch : MonoBehaviour
                 Debug.Log($"[Porta SCENDE] Origine={porta.position} Target={target} Altezza={altezza} Oggetto={rend?.gameObject.name}");
             }
 
-            // target porte da salire
+            //target porte da salire
             foreach (Transform porta in porteDaSalire)
             {
                 Renderer rend = porta.GetComponentInChildren<Renderer>();
@@ -89,7 +104,7 @@ public class DoorSwitch : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.transform == player)
+        if (other.CompareTag("Player"))
         {
             playerVicino = true;
             Debug.Log("Player vicino al pulsante.");
@@ -98,7 +113,7 @@ public class DoorSwitch : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (other.transform == player)
+        if (other.CompareTag("Player"))
         {
             playerVicino = false;
             Debug.Log("Player si è allontanato.");

@@ -8,6 +8,9 @@ public class FieldOfView : MonoBehaviour
     [Range(0, 360)]
     public float viewAngle = 90f;
 
+    [Header("Debug Settings")]
+    public bool showDebugGizmos = true;
+
     public LayerMask targetMask;
     public LayerMask obstacleMask;
 
@@ -53,6 +56,7 @@ public class FieldOfView : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        if (!showDebugGizmos) return;
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, viewRadius);
 
