@@ -15,7 +15,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] public GameObject player;
 
     private bool playerSpawned = false;
-    void Start()
+    void Awake()
     {
         if (surface == null)
         {
@@ -25,7 +25,7 @@ public class LevelGenerator : MonoBehaviour
         }
 
         GenerateLevel();
-
+        Debug.Log("navmesh creata");
         if (surface != null)
             surface.BuildNavMesh();
     }

@@ -44,7 +44,9 @@ public class EnemyController : MonoBehaviour
 
     private EnemyStateMachine stateMachine;
 
-    private void Awake()
+
+
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         if (player == null)
@@ -54,10 +56,6 @@ public class EnemyController : MonoBehaviour
             idleOrigin = transform.position;
 
         stateMachine = new EnemyStateMachine();
-    }
-
-    private void Start()
-    {
         idleOrigin = transform.position;
         idleOriginRotation = transform.rotation;
         stateMachine.ChangeState(new PatrolState(this, stateMachine));
