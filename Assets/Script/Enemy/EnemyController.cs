@@ -17,6 +17,9 @@ public class EnemyController : MonoBehaviour
     public FieldOfView fov;
     public NavMeshAgent agent;
 
+    [Header("Animation")]
+    public Animator animator;
+
     [Header("Patrol Settings")]
     public Transform[] waypoints;
     public int currentWaypointIndex = 0;
@@ -39,8 +42,8 @@ public class EnemyController : MonoBehaviour
 
     [Header("Search Settings")]
     public float searchTime = 3f;
-    public int searchOscillationCount = 2; // quante oscillazioni dx/sx
-    public float searchRotationSpeed = 120f; // velocità rotazione ricerca
+    public int searchOscillationCount = 2; //quante oscillazioni dx/sx
+    public float searchRotationSpeed = 120f; //velocità rotazione ricerca
 
     private EnemyStateMachine stateMachine;
 
@@ -59,10 +62,24 @@ public class EnemyController : MonoBehaviour
         idleOrigin = transform.position;
         idleOriginRotation = transform.rotation;
         stateMachine.ChangeState(new PatrolState(this, stateMachine));
+
     }
 
     private void Update()
     {
         stateMachine.Update();
+        UpdateAnimatorParams();
+
     }
+    void UpdateAnimatorParams()
+    {
+        if (animator == null) return;
+
+        //Velocità lineare per Idle/Walk/Run
+        float speed = (agent != null) ? agent.velocity.magnitude : 0f;
+        animator.SetFloat("Speed", speed);
+
+        
+    }
+
 }

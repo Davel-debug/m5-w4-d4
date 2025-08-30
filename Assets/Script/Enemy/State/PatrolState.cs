@@ -36,16 +36,33 @@ public class PatrolState : EnemyState
         if (targetDir != Vector3.zero)
         {
             Quaternion lookRot = Quaternion.LookRotation(targetDir);
+            Quaternion prevRot = enemy.transform.rotation;
+
+            // ruota fisicamente
             enemy.transform.rotation = Quaternion.RotateTowards(
-                enemy.transform.rotation,
-                lookRot,
-                enemy.idleRotationSpeed * Time.deltaTime
-            );
+            enemy.transform.rotation,
+            lookRot,
+            enemy.idleRotationSpeed * Time.deltaTime
+         );
+
+            // calcola direzione (destra/sinistra)
+            float signedAngle = Vector3.SignedAngle(enemy.transform.forward, targetDir, Vector3.up);
+            float turnNorm = Mathf.Clamp(signedAngle / 90f, -1f, 1f);
+
+            // calcola velocità di rotazione reale in gradi/sec
+            float angleDelta = Quaternion.Angle(prevRot, enemy.transform.rotation);
+            float angularSpeed = angleDelta / Time.deltaTime;
+
+            // normalizza la velocità in range 0..1 (assumendo 180°/sec come max)
+            float turnSpeedNorm = Mathf.Clamp01(angularSpeed / 180f);
+
+            // manda i valori all’Animator
+            enemy.animator.SetFloat("Turn", turnNorm);
+            enemy.animator.SetFloat("TurnSpeed", turnSpeedNorm);
 
             // controlla quanto manca per essere allineato
             float angle = Quaternion.Angle(enemy.transform.rotation, lookRot);
 
-            // se è praticamente allineato, fai partire il timer
             if (angle < 2f) // 2° di tolleranza
             {
                 idleTimer += Time.deltaTime;
@@ -60,6 +77,7 @@ public class PatrolState : EnemyState
         if (enemy.fov.visibleTarget != null)
             stateMachine.ChangeState(new ChaseState(enemy, stateMachine));
     }
+
 
 
     private void Patrol()
