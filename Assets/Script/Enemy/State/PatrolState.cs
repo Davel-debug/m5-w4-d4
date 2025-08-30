@@ -22,61 +22,47 @@ public class PatrolState : EnemyState
     }
 
     private void IdleLookAtWaypoints()
+{
+    // Rimane fermo all’origine
+    enemy.agent.ResetPath();
+    enemy.transform.position = enemy.idleOrigin;
+
+    if (enemy.waypoints.Length == 0) return;
+
+    // direzione verso il waypoint attuale
+    Vector3 targetDir = enemy.waypoints[enemy.currentWaypointIndex].position - enemy.transform.position;
+    targetDir.y = 0;
+
+    if (targetDir != Vector3.zero)
     {
-        // Rimane fermo all’origine
-        enemy.agent.ResetPath();
-        enemy.transform.position = enemy.idleOrigin;
+        Quaternion lookRot = Quaternion.LookRotation(targetDir);
+        Quaternion prevRot = enemy.transform.rotation;
 
-        if (enemy.waypoints.Length == 0) return;
-
-        // direzione verso il waypoint attuale
-        Vector3 targetDir = enemy.waypoints[enemy.currentWaypointIndex].position - enemy.transform.position;
-        targetDir.y = 0;
-
-        if (targetDir != Vector3.zero)
-        {
-            Quaternion lookRot = Quaternion.LookRotation(targetDir);
-            Quaternion prevRot = enemy.transform.rotation;
-
-            // ruota fisicamente
-            enemy.transform.rotation = Quaternion.RotateTowards(
+        // ruota fisicamente
+        enemy.transform.rotation = Quaternion.RotateTowards(
             enemy.transform.rotation,
             lookRot,
             enemy.idleRotationSpeed * Time.deltaTime
-         );
+        );
 
-            // calcola direzione (destra/sinistra)
-            float signedAngle = Vector3.SignedAngle(enemy.transform.forward, targetDir, Vector3.up);
-            float turnNorm = Mathf.Clamp(signedAngle / 90f, -1f, 1f);
+        // controlla quanto manca per essere allineato
+        float angle = Quaternion.Angle(enemy.transform.rotation, lookRot);
 
-            // calcola velocità di rotazione reale in gradi/sec
-            float angleDelta = Quaternion.Angle(prevRot, enemy.transform.rotation);
-            float angularSpeed = angleDelta / Time.deltaTime;
-
-            // normalizza la velocità in range 0..1 (assumendo 180°/sec come max)
-            float turnSpeedNorm = Mathf.Clamp01(angularSpeed / 180f);
-
-            // manda i valori all’Animator
-            enemy.animator.SetFloat("Turn", turnNorm);
-            enemy.animator.SetFloat("TurnSpeed", turnSpeedNorm);
-
-            // controlla quanto manca per essere allineato
-            float angle = Quaternion.Angle(enemy.transform.rotation, lookRot);
-
-            if (angle < 2f) // 2° di tolleranza
+        if (angle < 2f) // 2° di tolleranza
+        {
+            idleTimer += Time.deltaTime;
+            if (idleTimer >= enemy.idleRotationInterval)
             {
-                idleTimer += Time.deltaTime;
-                if (idleTimer >= enemy.idleRotationInterval)
-                {
-                    enemy.currentWaypointIndex = (enemy.currentWaypointIndex + 1) % enemy.waypoints.Length;
-                    idleTimer = 0f;
-                }
+                enemy.currentWaypointIndex = (enemy.currentWaypointIndex + 1) % enemy.waypoints.Length;
+                idleTimer = 0f;
             }
         }
-
-        if (enemy.fov.visibleTarget != null)
-            stateMachine.ChangeState(new ChaseState(enemy, stateMachine));
     }
+
+    if (enemy.fov.visibleTarget != null)
+        stateMachine.ChangeState(new ChaseState(enemy, stateMachine));
+}
+
 
 
 

@@ -8,6 +8,10 @@ public class FieldOfView : MonoBehaviour
     [Range(0, 360)]
     public float viewAngle = 90f;
 
+    [Header("Light Settings")]
+    public Light torchLight;
+    public Light extraLight;
+
     [Header("Debug Settings")]
     public bool showDebugGizmos = true;
 
@@ -20,6 +24,7 @@ public class FieldOfView : MonoBehaviour
 
     void Update()
     {
+        UpdateLights();
         FindVisibleTargets();
     }
 
@@ -51,6 +56,21 @@ public class FieldOfView : MonoBehaviour
                     break;
                 }
             }
+        }
+    }
+    void UpdateLights()
+    {
+        if (torchLight != null)
+        {
+            torchLight.spotAngle = viewAngle;
+            torchLight.range = viewRadius;
+            torchLight.transform.rotation = transform.rotation; // segue forward del nemico
+        }
+
+        if (extraLight != null)
+        {
+            extraLight.spotAngle = 360f;
+            extraLight.range = enemy.extraViewRadius;
         }
     }
 

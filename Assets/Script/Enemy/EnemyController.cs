@@ -63,6 +63,7 @@ public class EnemyController : MonoBehaviour
         idleOriginRotation = transform.rotation;
         stateMachine.ChangeState(new PatrolState(this, stateMachine));
 
+
     }
 
     private void Update()
@@ -75,11 +76,21 @@ public class EnemyController : MonoBehaviour
     {
         if (animator == null) return;
 
-        //Velocità lineare per Idle/Walk/Run
+        // Velocità lineare per Idle/Walk/Run
         float speed = (agent != null) ? agent.velocity.magnitude : 0f;
         animator.SetFloat("Speed", speed);
 
-        
+        /* Turn  calcolato dalla direzione del path vs forward
+        if (agent != null && agent.desiredVelocity.sqrMagnitude > 0.01f)
+        {
+            float signedAngle = Vector3.SignedAngle(transform.forward, agent.desiredVelocity.normalized, Vector3.up);
+            float turnNorm = Mathf.Clamp(signedAngle / 90f, -1f, 1f);
+            animator.SetFloat("Turn", turnNorm);
+        }
+        else
+        {
+            animator.SetFloat("Turn", 0f);
+        }*/
     }
 
 }
